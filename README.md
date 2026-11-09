@@ -18,6 +18,8 @@ Veja o andamento em [`docs/03-plano-de-fases.md`](docs/03-plano-de-fases.md).
 | [`docs/01-requisitos-resumo.md`](docs/01-requisitos-resumo.md) | Requisitos organizados em uma página |
 | [`docs/02-fase1-diagnostico.md`](docs/02-fase1-diagnostico.md) | Pontos críticos, respostas do Felipe, decisões tomadas e perguntas em aberto |
 | [`docs/03-plano-de-fases.md`](docs/03-plano-de-fases.md) | As 7 fases, o que cada uma entrega e onde estamos |
+| [`docs/04-historico-da-conversa.md`](docs/04-historico-da-conversa.md) | Registro cronológico completo da conversa de planejamento (perguntas, respostas, explicações) |
+| [`docs/05-referencias.md`](docs/05-referencias.md) | Fontes, links e o que ainda falta pesquisar. Inclui `docs/_olist_api_original.md` (notas de API já levantadas) |
 
 ## Como retomar uma sessão
 
