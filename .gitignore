@@ -1,0 +1,28 @@
+# Segredos e credenciais: nunca versionar
+.env
+.env.*
+*.pem
+*.key
+secrets.*
+credentials.json
+token.json
+client_secret*.json
+*.p12
+*.pfx
+
+# Dados reais: relatórios de marketplace, exportações do Olist, planilhas
+dados/
+exports/
+relatorios/
+*.xlsx
+*.xls
+*.csv
+
+# Ambiente e lixo local
+node_modules/
+__pycache__/
+.venv/
+.DS_Store
+Thumbs.db
+.clasp.json
+.claude/settings.local.json
