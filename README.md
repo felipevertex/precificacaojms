@@ -23,6 +23,7 @@ Veja [`ROADMAP.md`](ROADMAP.md): fases, o que falta para fechar a Fase 1, decis�
 | [`docs/02-fase1-diagnostico.md`](docs/02-fase1-diagnostico.md) | Pontos críticos, respostas do Felipe, decisões tomadas e perguntas em aberto |
 | [`docs/03-plano-de-fases.md`](docs/03-plano-de-fases.md) | As 7 fases, o que cada uma entrega e onde estamos |
 | [`docs/04-historico-da-conversa.md`](docs/04-historico-da-conversa.md) | Registro cronológico completo da conversa de planejamento (perguntas, respostas, explicações) |
+| [`docs/06-analise-planilha-manual.md`](docs/06-analise-planilha-manual.md) | Análise da planilha manual do Felipe: o que manter, os problemas e o que acrescentar |
 | [`docs/05-referencias.md`](docs/05-referencias.md) | Fontes, links e o que ainda falta pesquisar. Inclui `docs/_olist_api_original.md` (notas de API já levantadas) |
 
 ## Como retomar uma sessão
