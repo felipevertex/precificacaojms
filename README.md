@@ -10,6 +10,10 @@ Sistema de gestão de rentabilidade e controle financeiro por pedido para o ecom
 
 Veja o andamento em [`docs/03-plano-de-fases.md`](docs/03-plano-de-fases.md).
 
+## Roadmap
+
+Veja [`ROADMAP.md`](ROADMAP.md): fases, o que falta para fechar a Fase 1, decisões e riscos, com diagrama.
+
 ## Documentos
 
 | Arquivo | Conteúdo |
