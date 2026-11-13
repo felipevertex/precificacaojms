@@ -89,3 +89,6 @@ Com a empresa sem conseguir pagar as contas, a prioridade é responder rápido o
 - Frases-chave dele: "a precisão financeira é mais importante do que a aparência"; "seja crítico, não concorde automaticamente".
 - O frete de envio aos centros de distribuição e o custo de embalagem hoje não entram em lugar nenhum. Isso é parte do motivo de o lucro real estar abaixo do que ele imagina.
 - A Fase 2 deve começar pelo que o Felipe trouxer de casa (relatórios, prints do Olist) e pela confirmação do acesso à API v3.
+
+## 7. Continuação
+A sessão seguinte (2026-11-13: token, leitura do Olist, planilha, importação automática, relatórios dos marketplaces) está em `08-sessao-2-etapa1.md`. Resumo e lembretes para retomar: `../RETOMAR.md`.

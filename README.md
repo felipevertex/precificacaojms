@@ -6,13 +6,15 @@ Sistema de gestão de rentabilidade e controle financeiro por pedido para o ecom
 
 ## Status
 
-**Etapa 1 iniciada em 2026-11-13 por autorização explícita do Felipe:** planilha "Análise de Pedidos" criada com os pedidos dos últimos 7 dias lidos do Olist (somente leitura). Os documentos de planejamento continuam valendo e as colunas ainda precisam da validação dele. Ver `docs/07-planilha-etapa1.md`.
+> 👉 **Retomando? Leia [`RETOMAR.md`](RETOMAR.md):** o que está no ar, o que falta e a primeira mensagem sugerida para a próxima sessão.
+
+**Etapa 1 em andamento (iniciada em 2026-11-13 por autorização explícita do Felipe):** planilha "Análise de Pedidos" criada com 282 pedidos lidos do Olist (somente leitura) e **atualizada automaticamente a cada 30 minutos** por um cron na VPS. Ainda sem lucro calculado: faltam os relatórios dos marketplaces. Os documentos de planejamento continuam valendo e as colunas ainda precisam da validação dele. Ver `docs/07-planilha-etapa1.md`.
 
 Veja o andamento em [`docs/03-plano-de-fases.md`](docs/03-plano-de-fases.md).
 
 ## Roadmap
 
-Veja [`ROADMAP.md`](ROADMAP.md): fases, o que falta para fechar a Fase 1, decisões e riscos, com diagrama.
+Veja [`ROADMAP.md`](ROADMAP.md): lembrete rápido no topo, estado por frente, fases, decisões e riscos, com diagrama.
 
 ## Documentos
 
@@ -25,13 +27,16 @@ Veja [`ROADMAP.md`](ROADMAP.md): fases, o que falta para fechar a Fase 1, decis�
 | [`docs/04-historico-da-conversa.md`](docs/04-historico-da-conversa.md) | Registro cronológico completo da conversa de planejamento (perguntas, respostas, explicações) |
 | [`docs/06-analise-planilha-manual.md`](docs/06-analise-planilha-manual.md) | Análise da planilha manual do Felipe: o que manter, os problemas e o que acrescentar |
 | [`docs/07-planilha-etapa1.md`](docs/07-planilha-etapa1.md) | A planilha "Análise de Pedidos" construída: abas, origem de cada coluna, regras e resultado da primeira carga |
+| [`docs/08-sessao-2-etapa1.md`](docs/08-sessao-2-etapa1.md) | Diário da sessão 2: leitura do Olist, construção da planilha, importação automática, problemas e decisões |
+| [`docs/09-relatorios-marketplaces.md`](docs/09-relatorios-marketplaces.md) | O que pedir de cada marketplace (ML, Magalu, Amazon, Shopee, KaBuM) para completar a planilha |
+| [`docs/10-operacao-vps.md`](docs/10-operacao-vps.md) | Onde cada peça roda, o cron, como conferir, rodar na mão, desligar, armadilhas |
 | [`docs/05-referencias.md`](docs/05-referencias.md) | Fontes, links e o que ainda falta pesquisar. Inclui `docs/_olist_api_original.md` (notas de API já levantadas) |
 
 ## Como retomar uma sessão
 
 1. `git pull`
-2. Ler `CLAUDE.md` e `docs/02-fase1-diagnostico.md` (seção "Perguntas em aberto")
-3. Continuar da fase indicada em `docs/03-plano-de-fases.md`
+2. Ler `RETOMAR.md` (lembretes e próximos passos) e `CLAUDE.md`
+3. Conferir `ROADMAP.md` (lembrete rápido no topo)
 
 ## Segurança
 

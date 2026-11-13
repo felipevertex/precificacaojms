@@ -2,6 +2,8 @@
 
 > Carregado automaticamente em qualquer sessão neste repositório. Serve para retomar o projeto sem depender do histórico de conversas.
 
+**👉 Comece por `RETOMAR.md`** (estado atual, lembretes, próximos passos) e depois `ROADMAP.md` (lembrete rápido no topo).
+
 ## O que é
 
 Sistema de rentabilidade por pedido para o ecommerce da **JMS** (informática, Cuiabá-MT). Interface: Google Sheets. Fonte dos pedidos: ERP **Olist** (Tiny, API v3). Marketplaces: Mercado Livre, Shopee, Amazon, Magalu, KaBuM. Fulfillment em Mercado Livre, Amazon e Magalu. Volume: 20 a 50 pedidos por dia. Regime tributário: Lucro Presumido.
@@ -27,9 +29,20 @@ Repositório separado do `jmsecom` (portal de agentes da Vertex). Quem trabalha 
 
 Ver `docs/02-fase1-diagnostico.md`. Em resumo: Sheets como interface agora, Postgres depois (a VPS da Vertex já tem), com a lógica em script e não em fórmulas para facilitar a migração. Entrega em duas etapas: primeiro lucro por pedido a partir do Olist mais relatórios dos marketplaces, depois automação por API.
 
-## Estado atual
+## Estado atual (2026-11-13)
 
-Etapa 1 iniciada: planilha criada e carregada com 282 pedidos. Faltam os relatórios dos marketplaces, o cadastro de custos adicionais e a validação das colunas. Pendências do Felipe estão na seção "Perguntas em aberto" de `docs/02-fase1-diagnostico.md`.
+Etapa 1 em andamento. A planilha "Análise de Pedidos" tem 282 pedidos e é **atualizada sozinha a cada 30 minutos** por um cron na VPS (`scripts/importar_pedidos.py`). Não calcula lucro ainda: faltam os relatórios dos marketplaces (Mercado Livre e Magalu primeiro, depois Amazon, Shopee, KaBuM), o ICMS do XML, embalagem/preparação por SKU, frete aos centros e custos indiretos. O token do Olist precisa ser trocado. Lista completa em `RETOMAR.md`.
+
+## Como o código está organizado
+
+- `scripts/regras.py` é a **fonte única** das colunas e fórmulas de Pedidos, Itens e Produtos e Custos. Mudança de coluna ou fórmula: só ali.
+- `scripts/olist.py`: cliente somente leitura da API 2.0 do Olist. `scripts/sheets_util.py`: conexão com o Google Sheets (converte `,` em `;` nas fórmulas por causa do locale pt_BR).
+- `scripts/montar_planilha.py` constrói a planilha (`--reset` apaga o que foi lançado à mão: cuidado). `scripts/importar_pedidos.py` é a rotina incremental do cron.
+- Onde roda: token do Olist local e na VPS; chave do Google só na VPS. Detalhes em `docs/10-operacao-vps.md`.
+- Pendências de cada lado (Felipe e Claude): `RETOMAR.md`.
+
+## Permissões e cuidados
+- Instalar ou alterar agendamento (cron) e mexer na VPS exigem a autorização **explícita e atual** do Felipe no chat. O cron atual foi autorizado em 2026-11-13. Quando a política de segurança bloqueia uma ação, não contornar: pedir a autorização.
 
 ## Segurança
 

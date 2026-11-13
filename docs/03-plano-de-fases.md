@@ -20,5 +20,8 @@
 
 As fases 2 a 6 podem cobrir as duas etapas, mas a implementação começa pela Etapa 1.
 
+## Estado em 2026-11-13
+Etapa 1 em andamento (aprovada explicitamente pelo Felipe): planilha criada, pedidos importados e atualizados por cron. Falta carregar os relatórios dos marketplaces para calcular o lucro. Ver `../RETOMAR.md`.
+
 ## Próximo passo
-Receber os itens da seção "Para o Felipe levar de casa" em `02-fase1-diagnostico.md` e fechar a Fase 1. Em seguida, iniciar a Fase 2 pelas verificações de API do Olist e dos marketplaces.
+Carregar os relatórios dos marketplaces (Mercado Livre e Magalu primeiro) na aba Lançamentos e, em paralelo, receber os itens da seção "Para o Felipe levar de casa" em `02-fase1-diagnostico.md`. Depois, avançar a Fase 2. Itens originais: receber os itens da seção "Para o Felipe levar de casa" em `02-fase1-diagnostico.md` e fechar a Fase 1. Em seguida, iniciar a Fase 2 pelas verificações de API do Olist e dos marketplaces.

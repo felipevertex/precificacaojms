@@ -76,3 +76,9 @@ Nada abaixo está confirmado.
 - API ou extrato para fulfillment de Mercado Livre, Amazon e Magalu.
 - Se o XML da nota emitida pelo Olist traz o ICMS por item.
 - Comparação das arquiteturas: Apps Script, n8n, ou os dois.
+
+## Atualização 2026-11-13
+- A Etapa 1 foi iniciada (ver `07-planilha-etapa1.md` e `08-sessao-2-etapa1.md`). O Olist está sendo lido pela **API 2.0 (token)**; a v3 continua sem confirmação.
+- Respondido de fato: o Olist **não traz comissão nem tarifas** no pedido; fulfillment se identifica pelo depósito; o custo vem do cadastro do produto.
+- Novas pendências do Felipe (lista viva em `../RETOMAR.md`): relatórios de Mercado Livre, Magalu e Amazon (`09-relatorios-marketplaces.md`), 3 SKUs sem custo, confirmar canais Casas Bahia e Fulfillment Shopee, trocar o token do Olist.
+- Perguntas da planilha manual ainda sem resposta: ver `06-analise-planilha-manual.md`.

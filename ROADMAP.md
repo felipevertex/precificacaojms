@@ -1,8 +1,38 @@
 # Roadmap
 
-Atualizado em 2026-11-13. Versão visual (privada, conta do Felipe): https://claude.ai/artifact/LVifwWVvkMQBGVT1PYDDTE
+Atualizado em 2026-11-13. **Fonte de verdade: este arquivo.** A versão visual privada (https://claude.ai/artifact/LVifwWVvkMQBGVT1PYDDTE) pode estar desatualizada.
 
-**Regra:** nenhum código, planilha ou integração antes da aprovação explícita da Fase 7.
+> 👉 **Retomando de outra sessão? Leia primeiro [`RETOMAR.md`](RETOMAR.md).**
+
+## 🔔 LEMBRETE RÁPIDO (2026-11-13)
+
+**Onde estamos:** a Etapa 1 está em construção. A planilha "Análise de Pedidos" existe, tem 282 pedidos dos últimos 7 dias e **se atualiza sozinha a cada 30 minutos** (cron na VPS). Ainda **não calcula lucro**: faltam os dados dos marketplaces.
+
+**Próximo passo:** o Felipe traz os **relatórios por pedido do Mercado Livre e do Magalu** (depois Amazon) em `dados/relatorios/`. Guia do que pedir: [`docs/09-relatorios-marketplaces.md`](docs/09-relatorios-marketplaces.md).
+
+**Pendências rápidas**
+- [ ] 🔐 Trocar o token do Olist (apareceu no chat)
+- [ ] Relatórios de Mercado Livre e Magalu (07 a 13/11); depois Amazon, Shopee, KaBuM
+- [ ] 3 SKUs com custo médio zerado: `23-DLXL-TSPF`, `923`, `L1-O349-LQJ6`
+- [ ] Confirmar canais "Casas Bahia Marketplace" e "Fulfillment Shopee"
+- [ ] Conferir que o cron roda (aba Logs + `/var/log/precificacao.log`)
+- [ ] Contador valida a alíquota estimada (hoje 2,5%, herdada da planilha manual)
+
+## Estado por frente
+
+| Frente | Estado |
+|---|---|
+| Planilha "Análise de Pedidos" | ✅ Criada (10 abas), carregada |
+| Importação do Olist | ✅ Automática, a cada 30 min (07h às 22h Cuiabá) |
+| Custo do produto por item | ✅ Congelado na importação; 3 SKUs sem custo |
+| Comissão, tarifa, frete pago, fulfillment | ⏳ Aguardam relatórios dos marketplaces |
+| ICMS da nota | ⏳ Pendente (XML) |
+| Embalagem, preparação, frete aos centros, indiretos | ⏳ Cadastros e rateio a fazer |
+| Preço mínimo por SKU/canal | ⏳ A fazer |
+| APIs financeiras dos marketplaces | ⏳ Etapa 2, pesquisa não iniciada |
+| Postgres | ⏳ Depois |
+
+**Regra original:** nenhum código antes da aprovação da Fase 7. **Exceção:** em 2026-11-13 o Felipe aprovou explicitamente iniciar a Etapa 1 (ver `docs/07-planilha-etapa1.md`). O que vai além dela volta a exigir aprovação.
 
 ```mermaid
 flowchart LR
@@ -15,6 +45,7 @@ flowchart LR
     F7 --> E1["Etapa 1<br/>Lucro por pedido<br/>(Olist + relatórios)"]
     E1 --> E2["Etapa 2<br/>APIs, conciliação,<br/>demais canais"]
     style F1 fill:#f8ecd2,stroke:#b0700f
+    style E1 fill:#f8ecd2,stroke:#b0700f
 ```
 
 ## Agora: fechar a Fase 1
