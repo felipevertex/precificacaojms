@@ -56,7 +56,7 @@ Nunca apaga nem sobrescreve o que você lançou (Lançamentos, Produtos e Custos
 
 Agendamento previsto: a cada 30 minutos, das 07h às 22h de Cuiabá (11h às 02h UTC), com `flock` para não sobrepor execuções. Linha de cron:
 `*/30 11-23,0-2 * * * flock -n /tmp/precificacao.lock env DIAS=30 DIAS_NOVOS=7 SECRETS_PATH=/opt/jmsecom/app/.streamlit/secrets.toml SHEET_ID=<id> OLIST_ENV=/opt/precificacao/olist.env /opt/jmsecom/app/venv/bin/python /opt/precificacao/scripts/importar_pedidos.py >> /var/log/precificacao.log 2>&1`
-**Status: o cron ainda não foi instalado** (a instalação foi bloqueada pela política de segurança da sessão e depende do Felipe). A rotina foi testada em execução manual: sem pedidos novos e sem alterações, depois re-adicionando um pedido apagado de propósito (linha, item e fórmulas voltaram corretos, 0 erros).
+**Status: cron instalado em 2026-11-13 (autorizado pelo Felipe)** no crontab do root da VPS; backup do crontab anterior em `/root/crontab.bak-2026-11-13`; log em `/var/log/precificacao.log`. A rotina foi testada em execução manual: sem pedidos novos e sem alterações, depois re-adicionando um pedido apagado de propósito (linha, item e fórmulas voltaram corretos, 0 erros).
 
 Segurança: o token do Olist dá acesso total à conta e está num servidor onde o Streamlit roda como root. **Trocar o token antes de uso em produção.**
 
