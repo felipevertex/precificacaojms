@@ -22,21 +22,8 @@ import gspread
 from google.oauth2.service_account import Credentials
 
 
-# A planilha usa locale pt_BR: formulas gravadas pela API usam ";" como separador de argumentos.
-_update_original = gspread.Worksheet.update
-
-
-def _converter(valores):
-    return [[(c.replace(",", ";") if isinstance(c, str) and c.startswith("=") else c) for c in linha] for linha in valores]
-
-
-def _update(self, *args, **kwargs):
-    if kwargs.get("values") is not None:
-        kwargs["values"] = _converter(kwargs["values"])
-    return _update_original(self, *args, **kwargs)
-
-
-gspread.Worksheet.update = _update
+from regras import chave_pedido, linha_item, linha_pedido, linha_produto, modalidade, custo_do_produto  # noqa: E402,F401
+from sheets_util import conectar  # noqa: E402
 
 SHEET_ID = os.environ["SHEET_ID"]
 SECRETS = os.environ["SECRETS_PATH"]
@@ -57,55 +44,13 @@ def cor(t):
     return {"red": t[0], "green": t[1], "blue": t[2]}
 
 
-def conectar():
-    s = dict(tomllib.load(open(SECRETS, "rb"))["google_service_account"])
-    s["private_key"] = s["private_key"].replace("\\n", "\n")
-    c = Credentials.from_service_account_info(
-        s, scopes=["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive.readonly"])
-    return gspread.authorize(c)
-
-
 # ---------------------------------------------------------------- dados
-def modalidade(p):
-    dep = (p.get("deposito") or "").upper()
-    if "FULL" in dep:
-        if "AMAZON" in dep:
-            return "Fulfillment Amazon"
-        if "MERCADO" in dep:
-            return "Fulfillment Mercado Livre"
-        if "MAGAZINE" in dep or "MAGALU" in dep:
-            return "Fulfillment Magalu"
-        return "Fulfillment (" + (p.get("deposito") or "").strip() + ")"
-    if (p.get("forma_envio") or "") == "AMAZON_DBA":
-        return "Estoque próprio · DBA"
-    return "Estoque próprio"
-
-
-def custo_do_produto(prod, produtos):
-    """(custo medio unitario | None, observacao). None = pendente."""
-    if prod is None:
-        return None, "produto não encontrado no Olist"
-    if prod["classe"] == "K":
-        if not prod["kit"]:
-            return None, "kit sem composição lida"
-        total = 0.0
-        for comp in prod["kit"]:
-            c = produtos.get(comp["id_produto"])
-            if not c or c["preco_custo_medio"] <= 0:
-                return None, "componente do kit sem custo médio"
-            total += c["preco_custo_medio"] * comp["quantidade"]
-        return round(total, 2), "kit: soma dos componentes"
-    if prod["preco_custo_medio"] > 0:
-        return prod["preco_custo_medio"], ""
-    return None, "custo médio zerado no Olist"
-
-
 def carregar():
     d = json.load(open(ARQ, encoding="utf-8"))
     produtos = d["produtos"]
     pedidos, vistos = [], {}
     for p in d["pedidos"]:
-        chave = p.get("numero_ecommerce") or f"OLIST-{p['numero']}"
+        chave = chave_pedido(p)
         vistos[chave] = vistos.get(chave, 0) + 1
         if vistos[chave] > 1:
             chave = f"{chave}#{vistos[chave]}"
@@ -240,37 +185,19 @@ def main():
     reqs = []
 
     # ============ ITENS
-    itens_linhas, custo_por_chave = [], {}
-    for p in pedidos:
-        full = modalidade(p).startswith("Fulfillment")
-        for it in p["itens"]:
-            prod = produtos.get(it["id_produto"])
-            custo, obs = custo_do_produto(prod, produtos)
-            ult = prod["preco_custo"] if prod and prod["preco_custo"] > 0 else None
-            itens_linhas.append([
-                p["chave"], p["numero"], it["sku"], it["descricao"], it["quantidade"], it["valor_unitario"], None,
-                custo if custo is not None else "pendente", ult if ult is not None else "",
-                (prod or {}).get("consultado_em", ""), None, None, "pendente" if full else "n/a", obs,
-                "Kit" if prod and prod["classe"] == "K" else "Simples", (prod or {}).get("ncm", ""), (prod or {}).get("origem", ""),
-            ])
+    itens_pares = [(p, it) for p in pedidos for it in p["itens"]]
+    itens_linhas = itens_pares
     cab_itens = ["Pedido no canal", "Nº Olist", "SKU", "Descrição", "Qtd", "Valor unitário", "Valor total",
                  "Custo unit. (médio Olist)", "Custo unit. (último, referência)", "Custo lido em", "Custo total (CMV)",
                  "Custos adicionais (embalagem e preparação)", "Frete aos centros (rateado)", "Obs. do custo", "Tipo", "NCM", "Origem"]
     w = ws["Itens"]
     w.update(range_name="A1", values=[cab_itens], value_input_option="USER_ENTERED")
-    linhas = []
-    for n, l in enumerate(itens_linhas, start=2):
-        l = list(l)
-        l[6] = f"=E{n}*F{n}"
-        l[10] = f'=IF(ISNUMBER(H{n}),H{n}*E{n},"pendente")'
-        l[11] = (f"=IF(ISNUMBER(VLOOKUP(C{n},'Produtos e Custos'!$A:$L,12,FALSE)),"
-                 f"VLOOKUP(C{n},'Produtos e Custos'!$A:$L,12,FALSE)*E{n},\"pendente\")")
-        linhas.append(l)
+    linhas = [linha_item(p, it, produtos, n) for n, (p, it) in enumerate(itens_pares, start=2)]
     if linhas:
         w.update(range_name="A2", values=linhas, value_input_option="USER_ENTERED")
     sid = w.id
     reqs += [req_fundo(sid, 0, 1, 0, 17, AZUL_BG, bold=True, wrap=True), req_congelar(sid, 1, 3),
-             req_numfmt(sid, 1, 3000, 5, 12, "CURRENCY", "R$ #,##0.00"), req_numfmt(sid, 1, 3000, 4, 5, "NUMBER", "0.##"),
+             req_numfmt(sid, 1, 3000, 5, 12, "CURRENCY", "R$ #,##0.00"), req_numfmt(sid, 1, 3000, 4, 5, "NUMBER", "0"),
              req_numfmt(sid, 1, 3000, 9, 10, "DATE_TIME", "dd/mm/yyyy hh:mm"),
              req_largura(sid, 0, 1, 170), req_largura(sid, 1, 2, 70), req_largura(sid, 2, 3, 90), req_largura(sid, 3, 4, 330),
              req_largura(sid, 4, 5, 50), req_largura(sid, 5, 12, 120), req_largura(sid, 12, 13, 130), req_largura(sid, 13, 14, 200),
@@ -289,15 +216,7 @@ def main():
         cab_p = ["SKU", "Nome", "Tipo", "Custo médio (Olist)", "Custo último (Olist)", "Custo lido em", "Embalagem (R$/un)", "Caixa e proteção (R$/un)",
                  "Fita e etiqueta (R$/un)", "Mão de obra de preparação (R$/un)", "Outros (R$/un)", "Custo adicional unit.", "Custo total unit.",
                  "NCM", "Origem", "Categoria", "Peso (kg)", "Observação"]
-        lp = []
-        for n, (sku, pid) in enumerate(sorted(skus.items()), start=2):
-            prod = produtos.get(pid)
-            custo, obs = custo_do_produto(prod, produtos)
-            lp.append([sku, (prod or {}).get("nome", ""), "Kit" if prod and prod["classe"] == "K" else "Simples",
-                       custo if custo is not None else "pendente", (prod or {}).get("preco_custo") or "", (prod or {}).get("consultado_em", ""),
-                       "", "", "", "", "", f'=IF(COUNT(G{n}:K{n})=0,"",SUM(G{n}:K{n}))',
-                       f'=IF(ISNUMBER(D{n}),D{n}+N(L{n}),"pendente")', (prod or {}).get("ncm", ""), (prod or {}).get("origem", ""),
-                       (prod or {}).get("categoria", ""), (prod or {}).get("peso_bruto", ""), obs])
+        lp = [linha_produto(sku, produtos.get(pid), produtos, n) for n, (sku, pid) in enumerate(sorted(skus.items()), start=2)]
         wp.update(range_name="A1", values=[cab_p], value_input_option="USER_ENTERED")
         if lp:
             wp.update(range_name="A2", values=lp, value_input_option="USER_ENTERED")
@@ -391,37 +310,7 @@ def main():
     for nome, a, b, _ in grupos:
         topo[0][a] = nome
     wpd.update(range_name="A1", values=topo + [cab], value_input_option="USER_ENTERED")
-    dados = []
-    for n, p in enumerate(pedidos, start=3):
-        mod = modalidade(p)
-        full = mod.startswith("Fulfillment")
-        nf = "Sim" if str(p.get("id_nota_fiscal") or "0") not in ("0", "") else "Não"
-        k = f"$A{n}"
-        def busca(tipo):
-            return (f'IF(COUNTIFS(Lançamentos!$A:$A,{k},Lançamentos!$B:$B,"{tipo}")=0,"pendente",'
-                    f'SUMIFS(Lançamentos!$C:$C,Lançamentos!$A:$A,{k},Lançamentos!$B:$B,"{tipo}"))')
-        canc = f'$F{n}="Cancelado"'
-        comissao = f'=IF({canc},"n/a",{busca("Comissão")})'
-        tarifa = f'=IF({canc},"n/a",{busca("Tarifa fixa")})'
-        frete = '="n/a"' if full else f'=IF({canc},"n/a",{busca("Frete pago")})'
-        ful = f'=IF({canc},"n/a",{busca("Fulfillment")})' if full else '="n/a"'
-        cmv = (f'=IF({canc},"n/a",IF(COUNTIFS(Itens!$A:$A,{k},Itens!$K:$K,"pendente")>0,"pendente",SUMIFS(Itens!$K:$K,Itens!$A:$A,{k})))')
-        adic = (f'=IF({canc},"n/a",IF(COUNTIFS(Itens!$A:$A,{k},Itens!$L:$L,"pendente")+COUNTIFS(Itens!$A:$A,{k},Itens!$M:$M,"pendente")>0,"pendente",'
-                f'SUMIFS(Itens!$L:$L,Itens!$A:$A,{k})+SUMIFS(Itens!$M:$M,Itens!$A:$A,{k})))')
-        imposto = f'=IF({canc},"n/a",IF(ISNUMBER(Parâmetros!$B$2),G{n}*Parâmetros!$B$2,"pendente"))'
-        indireto = f'=IF({canc},"n/a",IF(ISNUMBER(Parâmetros!$B$3),Parâmetros!$B$3,"pendente"))'
-        reemb = (f'=IF({canc},"n/a",IF(COUNTIFS(Lançamentos!$A:$A,{k},Lançamentos!$B:$B,"Reembolso")+COUNTIFS(Lançamentos!$A:$A,{k},Lançamentos!$B:$B,"Estorno")>0,'
-                 f'SUMIFS(Lançamentos!$C:$C,Lançamentos!$A:$A,{k},Lançamentos!$B:$B,"Reembolso")+SUMIFS(Lançamentos!$C:$C,Lançamentos!$A:$A,{k},Lançamentos!$B:$B,"Estorno"),'
-                 f'IF(ISNUMBER(SEARCH("Devol",$F{n})),"pendente",0)))')
-        status = f'=IF({canc},"Fora do resultado",IF(COUNTIF(O{n}:W{n},"pendente")>0,"Incompleto","Completo"))'
-        lucro = f'=IF(Z{n}="Completo",J{n}-SUM(O{n}:V{n})-N(W{n}),IF(Z{n}="Fora do resultado","n/a","pendente"))'
-        margem = f'=IF(ISNUMBER(X{n}),IF(J{n}=0,0,X{n}/J{n}),"")'
-        dados.append([
-            p["chave"], p["numero"], p["data_pedido"], p["canal"] or "(sem canal)", mod, p["situacao"], p["total_produtos"], p["valor_frete"], p["valor_desconto"],
-            f"=G{n}+H{n}-I{n}", nf, p["data_envio"] or "", p["data_entrega"] or "",
-            '="n/a"' if canc_est(p) else "pendente", cmv, adic, comissao, tarifa, frete, ful, imposto, indireto, reemb, lucro, margem, status,
-            agora, p.get("forma_envio") or "", p.get("deposito") or "",
-        ])
+    dados = [linha_pedido(p, n, agora) for n, p in enumerate(pedidos, start=3)]
     wpd.update(range_name="A3", values=dados, value_input_option="USER_ENTERED")
     sid = wpd.id
     ult = len(dados) + 2
@@ -542,10 +431,6 @@ def main():
 
     sh.batch_update({"requests": reqs})
     print(f"OK: {len(pedidos)} pedidos, {len(itens_linhas)} itens, {len(produtos)} produtos")
-
-
-def canc_est(p):
-    return p["situacao"] == "Cancelado"
 
 
 if __name__ == "__main__":

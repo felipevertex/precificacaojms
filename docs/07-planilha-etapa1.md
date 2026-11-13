@@ -46,8 +46,22 @@ Lidos: **282 pedidos, 283 itens, 88 produtos** (6 são kits).
 - **Nenhum pedido está com dado completo**, como esperado: faltam comissão, tarifas, frete pago, fulfillment, embalagem, custos indiretos e ICMS.
 - Custo dos produtos lido para 258 dos 262 pedidos. 4 itens sem custo utilizável (custo médio zerado no Olist): SKUs `23-DLXL-TSPF`, `923`, `L1-O349-LQJ6`.
 
+## Importação incremental (2026-11-13)
+`scripts/importar_pedidos.py`, instalado na VPS em `/opt/precificacao/` (o token do Olist fica em `/opt/precificacao/olist.env`, modo 600, somente root). Roda em ciclos:
+1. lista os pedidos dos últimos 30 dias (a listagem já traz a situação, então são ~12 chamadas);
+2. pedidos novos **dos últimos 7 dias** entram em Pedidos e Itens (SKU novo entra em Produtos e Custos);
+3. pedidos já na planilha que mudaram de situação têm situação, nota e datas atualizadas;
+4. cada execução gera uma linha na aba Logs. Erros também.
+Nunca apaga nem sobrescreve o que você lançou (Lançamentos, Produtos e Custos, Parâmetros).
+
+Agendamento previsto: a cada 30 minutos, das 07h às 22h de Cuiabá (11h às 02h UTC), com `flock` para não sobrepor execuções. Linha de cron:
+`*/30 11-23,0-2 * * * flock -n /tmp/precificacao.lock env DIAS=30 DIAS_NOVOS=7 SECRETS_PATH=/opt/jmsecom/app/.streamlit/secrets.toml SHEET_ID=<id> OLIST_ENV=/opt/precificacao/olist.env /opt/jmsecom/app/venv/bin/python /opt/precificacao/scripts/importar_pedidos.py >> /var/log/precificacao.log 2>&1`
+**Status: o cron ainda não foi instalado** (a instalação foi bloqueada pela política de segurança da sessão e depende do Felipe). A rotina foi testada em execução manual: sem pedidos novos e sem alterações, depois re-adicionando um pedido apagado de propósito (linha, item e fórmulas voltaram corretos, 0 erros).
+
+Segurança: o token do Olist dá acesso total à conta e está num servidor onde o Streamlit roda como root. **Trocar o token antes de uso em produção.**
+
 ## Limitações conhecidas desta versão
-- `Produtos e Custos` não acrescenta SKUs novos em reimportações (só é preenchida na criação).
-- A importação é por execução manual do script, ainda sem agendamento.
+- Pedidos mais antigos que 30 dias não têm a situação atualizada.
+- A importação só traz pedidos novos dos últimos 7 dias. Uma carga histórica maior precisa ser feita de propósito.
 - A API 2.0 do Olist é a legada; a v3 (OAuth2) continua pendente de confirmação de acesso.
 - ICMS da nota, tarifas reais e frete aos centros dependem de dados que o Felipe ainda vai fornecer.
