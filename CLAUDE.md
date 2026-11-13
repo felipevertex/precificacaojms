@@ -10,7 +10,7 @@ Repositório separado do `jmsecom` (portal de agentes da Vertex). Quem trabalha 
 
 ## Regra nº 1: planejamento antes de código
 
-**Não programar, criar planilhas ou implementar integrações até o Felipe aprovar explicitamente** (Fase 7). O projeto avança por fases (ver `docs/03-plano-de-fases.md`) e não se pula etapa. Antes de qualquer implementação, apresentar: requisitos, arquitetura, estrutura da planilha, modelo financeiro, estratégia de integração, plano e riscos.
+**Não programar, criar planilhas ou implementar integrações sem aprovação explícita do Felipe.** Em 2026-11-13 ele aprovou iniciar a Etapa 1 (planilha com os pedidos do Olist, ver `docs/07-planilha-etapa1.md`). Fora desse escopo, volta a valer a regra: planejar e aprovar antes. O projeto avança por fases (ver `docs/03-plano-de-fases.md`) e não se pula etapa. Antes de qualquer implementação, apresentar: requisitos, arquitetura, estrutura da planilha, modelo financeiro, estratégia de integração, plano e riscos.
 
 ## Como o Felipe quer que eu trabalhe
 
@@ -29,7 +29,7 @@ Ver `docs/02-fase1-diagnostico.md`. Em resumo: Sheets como interface agora, Post
 
 ## Estado atual
 
-Fase 1, aguardando a segunda rodada de respostas. Pendências do Felipe estão na seção "Perguntas em aberto" de `docs/02-fase1-diagnostico.md`.
+Etapa 1 iniciada: planilha criada e carregada com 282 pedidos. Faltam os relatórios dos marketplaces, o cadastro de custos adicionais e a validação das colunas. Pendências do Felipe estão na seção "Perguntas em aberto" de `docs/02-fase1-diagnostico.md`.
 
 ## Segurança
 

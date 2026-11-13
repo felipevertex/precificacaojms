@@ -6,7 +6,7 @@ Sistema de gestão de rentabilidade e controle financeiro por pedido para o ecom
 
 ## Status
 
-**Fase 1 (diagnóstico e requisitos) em andamento. Nada foi implementado ainda: sem planilha, sem script, sem integração.** O projeto segue um planejamento em fases e só começa a programar após aprovação explícita do Felipe.
+**Etapa 1 iniciada em 2026-11-13 por autorização explícita do Felipe:** planilha "Análise de Pedidos" criada com os pedidos dos últimos 7 dias lidos do Olist (somente leitura). Os documentos de planejamento continuam valendo e as colunas ainda precisam da validação dele. Ver `docs/07-planilha-etapa1.md`.
 
 Veja o andamento em [`docs/03-plano-de-fases.md`](docs/03-plano-de-fases.md).
 
@@ -24,6 +24,7 @@ Veja [`ROADMAP.md`](ROADMAP.md): fases, o que falta para fechar a Fase 1, decis�
 | [`docs/03-plano-de-fases.md`](docs/03-plano-de-fases.md) | As 7 fases, o que cada uma entrega e onde estamos |
 | [`docs/04-historico-da-conversa.md`](docs/04-historico-da-conversa.md) | Registro cronológico completo da conversa de planejamento (perguntas, respostas, explicações) |
 | [`docs/06-analise-planilha-manual.md`](docs/06-analise-planilha-manual.md) | Análise da planilha manual do Felipe: o que manter, os problemas e o que acrescentar |
+| [`docs/07-planilha-etapa1.md`](docs/07-planilha-etapa1.md) | A planilha "Análise de Pedidos" construída: abas, origem de cada coluna, regras e resultado da primeira carga |
 | [`docs/05-referencias.md`](docs/05-referencias.md) | Fontes, links e o que ainda falta pesquisar. Inclui `docs/_olist_api_original.md` (notas de API já levantadas) |
 
 ## Como retomar uma sessão
